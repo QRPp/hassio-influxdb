@@ -1,0 +1,5 @@
+{
+    "name": "Home Assistant Community Add-on: InfluxDB (@QRPp fork)",
+    "url": "https://github.com/QRPp/hassio-influxdb",
+    "maintainer": "@QRPp"
+}
