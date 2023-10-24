@@ -1,0 +1,7 @@
+{
+  "id": "10000",
+  "srcID": "10000",
+  "name": "InfluxDB HA add-on",
+  "url": "http://localhost:9092",
+  "active": true
+}

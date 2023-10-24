@@ -1,7 +1,7 @@
 #!/command/with-contenv bashio
 # ==============================================================================
 # Home Assistant Community Add-on: InfluxDB
-# Configures Kapacitor.conf
+# Configures influxdb.src for Chronograf
 # ==============================================================================
 
 declare influxd_ssl=
@@ -12,9 +12,8 @@ if bashio::config.true 'influxd_ssl' &&
 fi
 
 bashio::var.json \
-    reporting "^$(bashio::config 'reporting')" \
-    secret "$(</data/secret)"\
+    secret "$(</data/secret)" \
     ssl "${influxd_ssl}" \
     | tempio \
-        -template /etc/kapacitor/templates/kapacitor.gtpl \
-        -out /etc/kapacitor/kapacitor.conf
+        -template /etc/chronograf/templates/influxdb.gtpl \
+        -out /etc/chronograf/influxdb.src

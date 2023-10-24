@@ -16,10 +16,18 @@ s6-svwait -u -t 5000 /run/service//kapacitor
 
 secret=$(</data/secret)
 
+declare influxd_ssl=
+if bashio::config.true 'influxd_ssl' &&
+   bashio::config.has_value 'certfile' &&
+   bashio::config.has_value 'keyfile'; then
+  influxd_ssl=s
+fi
+
 # Wait for InfluxDB...
 bashio::log.info "Chronograf is waiting until InfluxDB is available..."
 for i in {1800..0}; do
     if influx \
+	${influxd_ssl:+-ssl -unsafeSsl} \
         -execute "SHOW DATABASES" \
         -username "chronograf" \
         -password "${secret}" \
@@ -38,11 +46,7 @@ bashio::log.info 'Starting Chronograf...'
 options+=(--host="127.0.0.1")
 options+=(--port=8889)
 options+=(--bolt-path=/data/chronograf.db)
-options+=(--influxdb-url="http://localhost:8086")
-
-options+=(--influxdb-username="chronograf")
-options+=(--influxdb-password="${secret}")
-options+=(--kapacitor-url="http://localhost:9092")
+options+=(--resources-path=/etc/chronograf)
 
 # Find the matching Chronograph log level
 if bashio::config.has_value 'log_level'; then

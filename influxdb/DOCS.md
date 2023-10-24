@@ -73,7 +73,14 @@ Enable or disable InfluxDB user authentication.
 
 Restricts InfluxDB HTTP port to only loopback (localhost) connections.
 
-**Note**: _It's recommended to turn this on since SSL isn't in use now._
+**Note**: _It's recommended to turn either this or influxd_ssl on, or both._
+
+### Option: `influxd_ssl`
+
+Enables SSL on InfluxDB HTTP port.
+
+**Note**: _It's recommended to turn either this or influxd_local_only on, or
+both._
 
 ### Option: `reporting`
 

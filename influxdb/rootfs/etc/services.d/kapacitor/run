@@ -10,10 +10,18 @@ s6-svwait -u -t 5000 /run/service//influxdb
 
 secret=$(</data/secret)
 
+declare influxd_ssl=
+if bashio::config.true 'influxd_ssl' &&
+   bashio::config.has_value 'certfile' &&
+   bashio::config.has_value 'keyfile'; then
+  influxd_ssl=s
+fi
+
 # Wait for InfluxDB...
 bashio::log.info "Kapacitor is waiting until InfluxDB is available..."
 for i in {1800..0}; do
     if influx \
+	${influxd_ssl:+-ssl -unsafeSsl} \
         -execute "SHOW DATABASES" \
         -username "kapacitor" \
         -password "${secret}" \

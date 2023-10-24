@@ -18,10 +18,29 @@ if bashio::config.false 'reporting'; then
     bashio::log.info "Reporting of usage stats to InfluxData is disabled."
 fi
 
+declare influxd_ssl=
+if bashio::config.true 'influxd_ssl' &&
+   bashio::config.has_value 'certfile' &&
+   bashio::config.has_value 'keyfile'; then
+  influxd_ssl=s
+fi
+
 # Disables external connectivity of InfluxDB
 if bashio::config.true 'influxd_local_only'; then
     sed -i '/^\[http\]$/a\'$'\n''  bind-address = "127.0.0.1:8086"' /etc/influxdb/influxdb.conf
-else
+elif [ -z "${influxd_ssl}" ]; then
     bashio::log.warning 'External network connections to InfluxDB are allowed.'
     bashio::log.warning 'Given that no SSL is used, this may be a concern.'
+fi
+
+# Sets up SSL for InfluxDB
+if [ -n "${influxd_ssl}" ]; then
+    perl -pi \
+	-e '$_ = "$`$& = true\n" if /\bhttps-enabled\b/;' \
+	-e '$_ = "$`$& = \"/ssl/$certfile\"\n" if /\bhttps-certificate\b/;' \
+	-e '$_ = "$`$& = \"/ssl/$keyfile\"\n" if /\bhttps-private-key\b/;' \
+	-s -- \
+	-certfile="$(bashio::config 'certfile')" \
+	-keyfile="$(bashio::config 'keyfile')" \
+	/etc/influxdb/influxdb.conf
 fi

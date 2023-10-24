@@ -13,7 +13,7 @@ data_dir = "/data/kapacitor"
   level="ERROR"
 
 [[influxdb]]
-  urls = ["http://localhost:8086"]
+  urls = ["http{{ .ssl }}://localhost:8086"]
   username = "kapacitor"
   password = "{{ .secret }}"
   insecure-skip-verify = true
